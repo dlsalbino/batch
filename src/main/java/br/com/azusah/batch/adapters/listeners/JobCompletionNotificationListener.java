@@ -1,6 +1,7 @@
-package br.com.azusah.batch;
+package br.com.azusah.batch.adapters.listeners;
 
 
+import br.com.azusah.batch.domain.entity.Coffee;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +20,8 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void beforeJob(JobExecution jobExecution) {
-        if (jobExecution.getStatus() == BatchStatus.COMPLETED){
+    public void afterJob(JobExecution jobExecution) {
+        if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
             LOGGER.info("!!! JOB FINISHED! Time to verify the results.");
 
             String query = "SELECT brand, origin, characteristics FROM coffee";
@@ -29,7 +30,7 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
                     .origin(rs.getString(2))
                     .characteristics(rs.getString(3))
                     .build())
-            .forEach(coffee -> LOGGER.info("Found < {} > in the database.", coffee));
+                    .forEach(coffee -> LOGGER.info("Found < {} > in the database.", coffee));
         }
     }
 

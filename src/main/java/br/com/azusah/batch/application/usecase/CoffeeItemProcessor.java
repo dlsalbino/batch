@@ -1,5 +1,6 @@
-package br.com.azusah.batch;
+package br.com.azusah.batch.application.usecase;
 
+import br.com.azusah.batch.domain.entity.Coffee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;

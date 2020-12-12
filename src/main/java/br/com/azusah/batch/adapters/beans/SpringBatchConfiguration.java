@@ -1,5 +1,8 @@
-package br.com.azusah.batch;
+package br.com.azusah.batch.adapters.beans;
 
+import br.com.azusah.batch.adapters.listeners.JobCompletionNotificationListener;
+import br.com.azusah.batch.application.usecase.CoffeeItemProcessor;
+import br.com.azusah.batch.domain.entity.Coffee;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
