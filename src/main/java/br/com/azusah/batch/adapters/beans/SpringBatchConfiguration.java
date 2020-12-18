@@ -16,6 +16,7 @@ import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilde
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
+import org.springframework.batch.item.file.transform.Range;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,12 +36,23 @@ public class SpringBatchConfiguration {
     private String fileInput;
 
     @Bean
-    public FlatFileItemReader<Coffee> reader() {
+    public FlatFileItemReader<Coffee> fixedLengthReader() {
+        return new FlatFileItemReaderBuilder<Coffee>()
+                .name("coffeeItemReader")
+                .resource(new ClassPathResource(fileInput))
+                .fixedLength().columns(new Range(1, 13), new Range(14, 20), new Range(21, 26))
+                .names("brand", "origin", "characteristics")
+                .targetType(Coffee.class)
+                .build();
+    }
+
+    @Bean
+    public FlatFileItemReader<Coffee> csvReader() {
         return new FlatFileItemReaderBuilder<Coffee>()
                 .name("coffeeItemReader")
                 .resource(new ClassPathResource(fileInput))
                 .delimited()
-                .names(new String[]{"brand", "origin", "characteristics"})
+                .names("brand", "origin", "characteristics")
                 .fieldSetMapper(new BeanWrapperFieldSetMapper<Coffee>() {{
                     setTargetType(Coffee.class);
                 }})
@@ -70,7 +82,8 @@ public class SpringBatchConfiguration {
     public Step step1(JdbcBatchItemWriter writer) {
         return stepBuilderFactory.get("step1")
                 .<Coffee, Coffee>chunk(10)
-                .reader(reader())
+                .reader(fixedLengthReader())
+//                .reader(csvReader())
                 .processor(processor())
                 .writer(writer)
                 .build();
